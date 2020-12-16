@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="test">
+        你好 <span>{{person.name}} {{content}}</span><br>
+        自我介绍： <span>{{person.desc}}</span><br>
+        他人评价： <span>{{content}}</span>
+    </div>
+    <script type="module">
+        import {Sue} from '../core/index.js'
+        const vm = new Sue({
+            el:'#test',
+            data:{
+                list:[1,2,3,4,5],
+                content: '亮哥贼帅',
+                person:{
+                    name:'llshi',
+                    desc:'师姐这么大，我想去看看',
+                    menu:['hwt','llshi'],
+                }
+            }
+        })
+        window.vm = vm;
+        // console.log(vm._vnode)    
+    </script>
+</body>
+</html>
