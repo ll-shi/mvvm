@@ -21,7 +21,6 @@ function proxyObj(vm,target,nameSpace){
             set(value){
                 console.log(key);
                 target[key] = value;
-                console.log('我要重新渲染节点了');
                 refreshNode(vm,getNameSpace(nameSpace,key))
             },
             get(){
@@ -34,7 +33,6 @@ function proxyObj(vm,target,nameSpace){
             configurable: true,
             set(value){
                 target[key] = value;
-                console.log('我要重新渲染节点了');
                 refreshNode(vm,getNameSpace(nameSpace,key));
             },
             get(){
@@ -87,7 +85,6 @@ function proxyMethod(newProto,methods,nameSpace){
             value: function(...args){
                 let origin = ArrayProto[method];
                 const result = origin.apply(this,args);
-                console.log('我要准备渲染了');
                 console.log(_vm);
                 refreshNode(_vm,nameSpace);
                 return result;
