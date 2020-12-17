@@ -1,3 +1,4 @@
+import {refreshNode} from './render.js'
 const ArrayProto = Array.prototype;
 /**
  * nameSpace用来查找预渲染中索引关系。
@@ -21,23 +22,26 @@ function proxyObj(vm,target,nameSpace){
                 console.log(key);
                 target[key] = value;
                 console.log('我要重新渲染节点了');
+                refreshNode(vm,getNameSpace(nameSpace,key))
             },
             get(){
                 return target[key];
             }
         });
         // 优化体验在vm上也代理data中的数据。
-        typeof value !== 'object' && Object.defineProperty(getReal(vm,nameSpace),key,{
+        const flag = typeof value !== 'object';
+        flag && Object.defineProperty(getReal(vm,nameSpace),key,{
             configurable: true,
             set(value){
                 target[key] = value;
                 console.log('我要重新渲染节点了');
+                refreshNode(vm,getNameSpace(nameSpace,key));
             },
             get(){
                 return target[key];
             }
         });
-        typeof value === 'object' && (value = proxy(vm,value,getNameSpace(nameSpace,key)));
+        !flag && (value = proxy(vm,value,getNameSpace(nameSpace,key)));
     }
     return result;
 }
@@ -47,7 +51,7 @@ function proxyArr(vm,target,nameSpace){
         proxyArr[i] = typeof target[i] === 'object' ? proxy(vm,target[i],nameSpace) : target[i]; 
     }
     // 代理数组原型上的方法。
-    proxyArr = updataProto(vm,target);
+    proxyArr = updataProto(vm,target,nameSpace);
     // 把代理对象添加到vm上
     add2vm(vm,nameSpace,proxyArr);
     return proxyArr;
@@ -64,17 +68,18 @@ function getNameSpace(nowNameSpace,key){
     nowNameSpace && key && (result = `${nowNameSpace}.${key}`);
     return result;
 }
-function updataProto(vm,target){
+function updataProto(vm,target,nameSpace){
     let wraperMehoods = ['push','pop','shift','unshift'];
     let newProto = {
         eleTyep : 'Array',
     };
     // wraperMehoods.map( method => { newProto[method] = function(){} })
-    proxyMethod.call(vm,newProto,wraperMehoods);
+    proxyMethod.call(vm,newProto,wraperMehoods,nameSpace);
     target.__proto__ = newProto;
     return target;
 }
-function proxyMethod(newProto,methods){
+function proxyMethod(newProto,methods,nameSpace){
+    let _vm = this;
     for(let method of methods){
         Object.defineProperty(newProto,method,{
             enumerable: true,
@@ -83,6 +88,8 @@ function proxyMethod(newProto,methods){
                 let origin = ArrayProto[method];
                 const result = origin.apply(this,args);
                 console.log('我要准备渲染了');
+                console.log(_vm);
+                refreshNode(_vm,nameSpace);
                 return result;
             }
         })
