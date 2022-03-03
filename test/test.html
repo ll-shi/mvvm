@@ -10,6 +10,7 @@
         你好 <span>哈哈{{ person.name }} {{content}}</span><br>
         自我介绍： <span>{{person.desc}}</span><br>
         他人评价： <span>{{content}}</span><br>
+        学习: <span>{{person.study.math}}</span><br>
         list: {{list}}
     </div>
     <script type="module">
@@ -23,6 +24,10 @@
                     name:'llshi',
                     desc:'师姐这么大，我想去看看',
                     menu:['hwt','llshi'],
+                    study:{
+                        math:'数学',
+                        chinese:'中文',
+                    }
                 }
             }
         })

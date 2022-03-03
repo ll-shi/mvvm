@@ -76,9 +76,17 @@ function getValue(scope,tempList){
     let temp = scope;
     tempList.map( key => {
         scope && (temp = temp[key])
-    }) 
+    })
+    Array.isArray(temp) && (temp = myToString(temp));
     return temp;
 }
+function myToString(Array){
+    let res = ''
+    for(let i= 0;i<Array.length;i++){
+      res+=Array[i]+' ';
+    }
+    return res;
+  }
 function mixinRender(Sue){
     Sue.prototype._render = function(){
         renderNode(this,this._vtree);
